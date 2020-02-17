@@ -194,7 +194,6 @@ function toRadians(degree) {
 function calculateProjectionMatrix() {
     let perspectiveMatrix = glMatrix.mat4.create();
     glMatrix.mat4.perspective(perspectiveMatrix, toRadians(camera.fov), (canvas.width / canvas.height), camera.zNear, camera.zFar);
-    console.log("YOLO", perspectiveMatrix);
     return perspectiveMatrix;
 }
 
