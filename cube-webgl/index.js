@@ -132,6 +132,9 @@ const mesh = {
     ibo: 0
 };
 
+let modelMatrix = glMatrix.mat4.create();
+glMatrix.mat4.identity(modelMatrix);
+
 const last_target = [ 0.0, 0.0, 0.0 ];
 const mouse = {
     lastX: 0.0,
@@ -143,7 +146,7 @@ const mouse = {
 // Because OpenGL/WebGL are right handed coordinate
 // by default up is positive Y and into the screen is negative Z
 const camera = {
-    position: glMatrix.vec3.fromValues(0.0, 0.0, 1.0),
+    position: glMatrix.vec3.fromValues(0.0, 1.0, 2.0),
     forward: glMatrix.vec3.fromValues(0.0, 0.0, -1.0),
     center: glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
     up: glMatrix.vec3.fromValues(0.0, 1.0, 0.0),
@@ -176,13 +179,14 @@ const vertexShaderSource = `#version 300 es
     in vec3 position;
     in vec4 color;
 
+    uniform mat4 model;
     uniform mat4 view;
     uniform mat4 projection;
 
     out vec4 vertexColor;
 
     void main() {
-        gl_Position = projection * view * vec4(position, 1.0);
+        gl_Position = projection * view * model * vec4(position, 1.0);
         gl_PointSize = 10.0;
         vertexColor = color;
     }
@@ -227,7 +231,7 @@ function toRadians(degree) {
 // Using a perspective projection
 function calculateProjectionMatrix() {
     let perspectiveMatrix = glMatrix.mat4.create();
-    glMatrix.mat4.perspective(perspectiveMatrix, camera.fov, (canvas.width / canvas.height), camera.zNear, camera.zFar);
+    glMatrix.mat4.perspective(perspectiveMatrix, toRadians(camera.fov), (canvas.width / canvas.height), camera.zNear, camera.zFar);
     console.log("YOLO", perspectiveMatrix);
     return perspectiveMatrix;
 }
@@ -292,11 +296,16 @@ function renderMesh(shaderProgram, mesh) {
     const viewMatrix = calculateViewMatrix();
     const projectionMatrix = calculateProjectionMatrix();
 
+    glMatrix.mat4.rotateY(modelMatrix, modelMatrix, Math.PI / 180);
+
     const viewUniformLoc = gl.getUniformLocation(shaderProgram, "view");
     gl.uniformMatrix4fv(viewUniformLoc, false, viewMatrix);
 
     const projectionUniformLoc = gl.getUniformLocation(shaderProgram, "projection");
     gl.uniformMatrix4fv(projectionUniformLoc, false, projectionMatrix);
+
+    const modelUniformLoc = gl.getUniformLocation(shaderProgram, "model");
+    gl.uniformMatrix4fv(modelUniformLoc, false, modelMatrix);
 
     // In case they are unbound for some reason
     gl.bindVertexArray(mesh.vao);
@@ -317,8 +326,6 @@ function renderLoop() {
     }
 
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-
     // spector.displayUI();
 
     const shaderProgram = loadShaderProgram();
