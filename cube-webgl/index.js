@@ -119,10 +119,6 @@ const indices = [
     20, 21, 22, 22, 23, 20
 ];
 
-const canvasState = {
-    isPointerCaptured: false
-};
-
 const canvas = document.getElementById("viewport");
 const gl = canvas.getContext("webgl2");
 
@@ -134,14 +130,6 @@ const mesh = {
 
 let modelMatrix = glMatrix.mat4.create();
 glMatrix.mat4.identity(modelMatrix);
-
-const last_target = [ 0.0, 0.0, 0.0 ];
-const mouse = {
-    lastX: 0.0,
-    lastY: 0.0,
-    x: 0.0,
-    y: 0.0
-};
 
 // Because OpenGL/WebGL are right handed coordinate
 // by default up is positive Y and into the screen is negative Z
@@ -156,23 +144,6 @@ const camera = {
     zNear: 0.1,
     zFar: 100.0,
     sensitivity: 0.05
-};
-
-const speed = 2.5;
-const dt = 0.0;
-
-const W = 87;
-const S = 83;
-const A = 65;
-const D = 68;
-const ESCAPE = 27;
-
-const keysPressed = {
-    W: false,
-    S: false,
-    A: false,
-    D: false,
-    ESCAPE: false
 };
 
 const vertexShaderSource = `#version 300 es
