@@ -215,15 +215,6 @@ function calculateViewMatrix() {
     return viewMatrix;
 }
 
-function calculateResolvedForwardVector() {
-    let front = glMatrix.vec3.create();
-    glMatrix.vec3.copy(front, camera.front);
-    front[0] = Math.cos(toRadians(camera.pitch)) * Math.sin(toRadians(camera.yaw));
-    front[1] = Math.sin(toRadians(camera.yaw));
-    front[2] = Math.cos(toRadians(camera.pitch)) * Math.cos(toRadians(camera.yaw));
-    return front;
-}
-
 function toRadians(degree) {
     return degree * (Math.PI / 180);
 }
